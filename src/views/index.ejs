@@ -10,7 +10,8 @@
         <h1>Lista de Estudiantes</h1>
         <ul>
           <% estudiantes.forEach(estudiante => { %>
-            <li><%= estudiante.nombre %> <%= estudiante.apellido %> - <%= estudiante.fechaNacimiento %></li>
+            <li>
+                <%= estudiante.codigoEstudiante %> <%= estudiante.nombre %> <%= estudiante.apellido %> - <%= estudiante.fechaNacimiento %></li>
           <% }) %>
         </ul>
       </body>
