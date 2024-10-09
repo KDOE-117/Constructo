@@ -9,6 +9,11 @@ Estudiante.init({
         primaryKey: true,
         autoIncrement: true,
     },
+    codigoEstudiante: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+        unique: true
+    },
     nombre: {
         type: DataTypes.STRING(25),
         allowNull: false,
