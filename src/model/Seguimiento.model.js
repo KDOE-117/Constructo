@@ -32,4 +32,7 @@ Seguimiento.init({
     timestamps: false,
 });
 
+console.log("Seguimiento:", Seguimiento === sequelize.models.Seguimiento);
+
+
 export default Seguimiento;

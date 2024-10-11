@@ -32,4 +32,7 @@ Programa.init({
     timestamps: false,
 });
 
+console.log("Programa:", Programa === sequelize.models.Programa);
+
+
 export default Programa;

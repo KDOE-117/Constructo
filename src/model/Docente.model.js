@@ -24,5 +24,7 @@ Docente.init({
     tableName: 'docente',
     timestamps: false,
 });
+console.log("Docente:", Docente === sequelize.models.Docente);
+
 
 export default Docente;

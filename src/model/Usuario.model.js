@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from "../config/databaseConnection.js";
-import Rol from './Rol.js';
+import Rol from './Rol.model.js';
 
 class Usuario extends Model { }
 
@@ -31,5 +31,7 @@ Usuario.init({
     tableName: 'usuario',
     timestamps: false,
 });
+
+console.log("Usuario:", Usuario === sequelize.models.Usuario);
 
 export default Usuario;

@@ -23,4 +23,7 @@ Rol.init({
     timestamps: false,
 });
 
+console.log("Rol:", Rol === sequelize.models.Rol);
+
+
 export default Rol;

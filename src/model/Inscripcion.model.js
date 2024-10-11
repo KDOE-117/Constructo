@@ -44,4 +44,7 @@ Inscripcion.init({
     timestamps: false,
 });
 
+console.log("Inscripcion:", Inscripcion === sequelize.models.Inscripcion);
+
+
 export default Inscripcion;

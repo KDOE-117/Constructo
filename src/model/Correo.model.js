@@ -38,5 +38,7 @@ Correo.init({
     tableName: 'correo',
     timestamps: false,
 });
+console.log("Correo:", Correo === sequelize.models.Correo);
+
 
 export default Correo;
