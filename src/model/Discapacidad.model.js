@@ -23,4 +23,5 @@ Discapacidad.init({
     timestamps: false,
 });
 
+console.log("Discapacidad:", Discapacidad === sequelize.models.Discapacidad);
 export default Discapacidad;

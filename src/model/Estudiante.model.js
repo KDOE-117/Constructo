@@ -33,9 +33,7 @@ Estudiante.init({
     timestamps: false,
 });
 
-console.log(Estudiante === sequelize.models.Estudiante);
-
-
+console.log("Estudiante:", Estudiante === sequelize.models.Estudiante);
 export default Estudiante;
 
 

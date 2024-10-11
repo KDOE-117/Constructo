@@ -12,7 +12,7 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 // Configurar body-parser para analizar datos de formularios
 app.use(bodyParser.urlencoded({ extended: true }));
+
 //Para Uso de API - Buenas Practicas
 app.use("/api/v1", routes)
-
 export default app;

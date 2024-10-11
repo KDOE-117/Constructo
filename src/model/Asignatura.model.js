@@ -42,5 +42,7 @@ Asignatura.init({
     tableName: 'asignatura',
     timestamps: false,
 });
+console.log("Asignatura:", Asignatura === sequelize.models.Asignatura);
+
 
 export default Asignatura;

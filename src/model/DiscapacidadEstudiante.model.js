@@ -1,8 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from "../config/databaseConnection.js";
-import Estudiante from './Estudiante.js';
-import Discapacidad from './Discapacidad.js';
-
+import Estudiante from './Estudiante.model.js';
+import Discapacidad from './Discapacidad.model.js';
 class DiscapacidadEstudiante extends Model { }
 
 DiscapacidadEstudiante.init({

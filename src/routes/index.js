@@ -1,7 +1,37 @@
 import { Router } from 'express';
 import Estudiante from '../model/Estudiante.model.js';
-
+import Usuario from '../model/Usuario.model.js';
+import Discapacidad from '../model/Discapacidad.model.js';
+import { DiscapacidadEstudiante } from '../model/Asociaciones.js';
 const routes = Router()
+
+/*RUTAS PAGINA*/
+//Login
+routes.get('/login', (req, res) => {
+    res.render('login')
+});
+routes.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    try {
+        const usuario = await Usuario.findOne({ where: { nombreUsuario: username } });
+        if (usuario && usuario.contraseña === password) {
+            res.render('loading');
+        } else {
+            res.status(401).render('login', { error: 'Usuario o contraseña incorrectos.' });
+        }
+    } catch (err) {
+        res.status(500).render('login', { error: 'Error del servidor. Por favor, inténtelo de nuevo más tarde.' });
+    };
+});
+
+//Inicio
+routes.get('/inicio', async (req, res) => {
+    const estudiantes = await Estudiante.findAll();
+    res.render('index', { titulo: 'Estudiantes', estudiantes });
+});
+
+
+/*RUTAS API*/
 /*Get All*/
 routes.get('/estudiantes', async (req, res) => {
     try {
@@ -27,15 +57,27 @@ routes.get('/estudiantes/:codigoEstudiante', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
+// GET Estudiante por Discapacidad
 
-/*Create*/
-routes.post('/generarEstudiante', async (req, res) => {
+routes.get('/estudiantes/discapacidad/:tipo', async (req, res) => {
+    const { tipo } = req.params;
     try {
-        const estudiante = await Estudiante.create(req.body);
-        console.log(`Estudiante creado: ${estudiante.nombre} ${estudiante.apellido}`);
-        res.status(201).json(estudiante);
+        const discapacidad = await Discapacidad.findOne({ where: { tipo } });
+        if (!discapacidad) {
+            return res.status(404).json({ error: 'Discapacidad no encontrada' });
+        }
+
+        const estudiantes = await Estudiante.findAll({
+            include: {
+                model: DiscapacidadEstudiante,
+                where: { fk_idDiscapacidad: discapacidad.idDiscapacidad },
+                include: [Discapacidad]
+            }
+        });
+
+        res.json(estudiantes);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        res.status(500).json({ error: 'Error al obtener los estudiantes' });
     }
 });
 

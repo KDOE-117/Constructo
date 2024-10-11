@@ -21,4 +21,7 @@ Grupo.init({
     timestamps: false,
 });
 
+console.log("Grupo:", Grupo === sequelize.models.Grupo);
+
+
 export default Grupo;

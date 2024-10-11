@@ -42,4 +42,7 @@ Telefono.init({
     timestamps: false,
 });
 
+console.log("Telefono:", Telefono === sequelize.models.Telefono);
+
+
 export default Telefono;
