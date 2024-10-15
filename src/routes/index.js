@@ -1,15 +1,16 @@
 import { Router } from 'express';
-import Estudiante from '../model/Estudiante.model.js';
+import { Estudiante, Correo, Telefono, Docente, DiscapacidadEstudiante } from '../model/Asociaciones.js';
 import Usuario from '../model/Usuario.model.js';
 import Discapacidad from '../model/Discapacidad.model.js';
-import { DiscapacidadEstudiante } from '../model/Asociaciones.js';
+
 const routes = Router()
 
 /*RUTAS PAGINA*/
-//Login
-routes.get('/login', (req, res) => {
-    res.render('login')
+//INDEX
+routes.get('/login', async (req, res) => {
+    res.render('login');
 });
+
 routes.post('/login', async (req, res) => {
     const { username, password } = req.body;
     try {
@@ -26,19 +27,117 @@ routes.post('/login', async (req, res) => {
 
 //Inicio
 routes.get('/inicio', async (req, res) => {
-    const estudiantes = await Estudiante.findAll();
-    res.render('index', { titulo: 'Estudiantes', estudiantes });
+    try {
+        console.log('Iniciando la consulta a la base de datos');
+        const estudiantes = await Estudiante.findAll({
+            include: [
+                {
+                    model: Correo
+                },
+                {
+                    model: Telefono
+                }
+            ]
+        });
+        res.render('index', { estudiantes });
+    } catch (error) {
+        console.error('Error en la consulta:', error);
+        res.status(500).render('error', { message: 'Error al cargar la página de inicio' });
+    }
 });
 
+routes.post('/inicio', async (req, res) => {
+    const { codigoEstudiante, nombre, apellido, fechaNacimiento, idDiscapacidad } = req.body;
+    try {
+        const nuevoEstudiante = await Estudiante.create({
+            codigoEstudiante,
+            nombre,
+            apellido,
+            fechaNacimiento,
+        });
+
+        if (idDiscapacidad) {
+            await DiscapacidadEstudiante.create({
+                fk_idEstudiante: nuevoEstudiante.idEstudiante,
+                fk_idDiscapacidad: idDiscapacidad,
+            });
+        }
+
+        res.status(201).json(nuevoEstudiante);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+routes.put('/inicio/:id', async (req, res) => {
+    const { id } = req.params;
+    const { codigoEstudiante, nombre, apellido, fechaNacimiento, idDiscapacidad } = req.body;
+    try {
+        const estudiante = await Estudiante.findByPk(id);
+        if (!estudiante) {
+            return res.status(404).json({ error: 'Estudiante no encontrado' });
+        }
+
+        await estudiante.update({
+            codigoEstudiante,
+            nombre,
+            apellido,
+            fechaNacimiento,
+        });
+
+        if (idDiscapacidad) {
+            await DiscapacidadEstudiante.destroy({ where: { fk_idEstudiante: id } });
+            await DiscapacidadEstudiante.create({
+                fk_idEstudiante: id,
+                fk_idDiscapacidad: idDiscapacidad,
+            });
+        }
+        res.status(200).json(estudiante);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 
 /*RUTAS API*/
 /*Get All*/
-routes.get('/estudiantes', async (req, res) => {
+routes.get('/datosEstudiantesDocentes', async (req, res) => {
     try {
-        const estudiantes = await Estudiante.findAll();
-        res.render('index', { titulo: 'Estudiantes', estudiantes });
+        const estudiantes = await Estudiante.findAll({
+            include: [
+                {
+                    model: Discapacidad,
+                    through: { attributes: [] }, // Para evitar datos de la tabla intermedia
+                    // attributes: ['idDiscapacidad', 'tipo'], // Para ver datos de la tabla intermedia...
+                },
+                {
+                    model: Telefono,
+                    attributes: ['numero', 'tipoPersona', 'esEmergencia'],
+                },
+                {
+                    model: Correo,
+                    attributes: ['correo', 'tipoPersona'],
+                },
+            ],
+            attributes: ['codigoEstudiante', 'nombre', 'apellido'],
+        });
+        const docentes = await Docente.findAll({
+            include: [
+                {
+                    model: Telefono,
+                    attributes: ['numero', 'tipoPersona', 'esEmergencia'],
+                },
+                {
+                    model: Correo,
+                    attributes: ['correo', 'tipoPersona'],
+                }
+            ],
+            attributes: ['nombre', 'apellido'],
+        });
+        res.json({ estudiantes, docentes });
+
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener los estudiantes' });
     }
 });
 
@@ -57,30 +156,54 @@ routes.get('/estudiantes/:codigoEstudiante', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
-// GET Estudiante por Discapacidad
 
 routes.get('/estudiantes/discapacidad/:tipo', async (req, res) => {
     const { tipo } = req.params;
     try {
         const discapacidad = await Discapacidad.findOne({ where: { tipo } });
         if (!discapacidad) {
-            return res.status(404).json({ error: 'Discapacidad no encontrada' });
+            return res.status(404).render('error', { message: 'Discapacidad no encontrada' });
         }
 
         const estudiantes = await Estudiante.findAll({
             include: {
-                model: DiscapacidadEstudiante,
-                where: { fk_idDiscapacidad: discapacidad.idDiscapacidad },
-                include: [Discapacidad]
-            }
+                model: Discapacidad,
+                where: { idDiscapacidad: discapacidad.idDiscapacidad },
+                through: { attributes: [] }, // Excluir atributos de la tabla intermedia
+            },
+            order: [['nombre', 'ASC']], // Ordenar por nombre de forma ascendente
         });
 
-        res.json(estudiantes);
+        res.render('estudiante', { estudiantes, tipo });
     } catch (error) {
-        res.status(500).json({ error: 'Error al obtener los estudiantes' });
+        console.error('Error al obtener los estudiantes:', error); // Agregar un log para depuración
+        res.status(500).render('error', { message: 'Error al obtener los estudiantes' });
     }
 });
 
+//Generar estudiantes...
+routes.post('/generarEstudiantes', async (req, res) => {
+    const { codigoEstudiante, nombre, apellido, fechaNacimiento, idDiscapacidad } = req.body;
+    try {
+        const nuevoEstudiante = await Estudiante.create({
+            codigoEstudiante,
+            nombre,
+            apellido,
+            fechaNacimiento,
+        });
+
+        if (idDiscapacidad) {
+            await DiscapacidadEstudiante.create({
+                fk_idEstudiante: nuevoEstudiante.idEstudiante,
+                fk_idDiscapacidad: idDiscapacidad,
+            });
+        }
+
+        res.status(201).json(nuevoEstudiante);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
 /*Update One*/
 routes.put('/actualizarEstudiante/:codigoEstudiante', async (req, res) => {
     try {

@@ -3,16 +3,23 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Estudiantes</title>
-  <link rel="stylesheet" href="">
+  <title>Inicio</title>
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-  <h1>Estudiantes con Discapacidad: <%= tipo %></h1>
+  <h1>Estudiantes con Discapacidad</h1>
   <ul>
     <% estudiantes.forEach(estudiante => { %>
-      <li><%= estudiante.codigoEstudiante %> <%= estudiante.nombre %> <%= estudiante.apellido %> - <%= estudiante.fechaNacimiento %></li>
+      <li>
+        <%= estudiante.codigoEstudiante %> <%= estudiante.nombre %> <%= estudiante.apellido %> - <%= estudiante.fechaNacimiento %>
+        <ul>
+          <% estudiante.Discapacidads.forEach(discapacidad => { %>
+            <li><%= discapacidad.tipo %></li>
+          <% }) %>
+        </ul>
+      </li>
     <% }) %>
   </ul>
-  <script src=""></script>
+  <script src="/js/scripts.js"></script>
 </body>
 </html>

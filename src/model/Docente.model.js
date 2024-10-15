@@ -26,5 +26,4 @@ Docente.init({
 });
 console.log("Docente:", Docente === sequelize.models.Docente);
 
-
 export default Docente;
