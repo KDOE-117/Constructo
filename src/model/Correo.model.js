@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from "../config/databaseConnection.js";
-import Estudiante from './Estudiante.js';
-import Docente from './Docente.js';
+import Estudiante from './Estudiante.model.js';
+import Docente from './Docente.model.js';
 
 class Correo extends Model { }
 
@@ -38,6 +38,7 @@ Correo.init({
     tableName: 'correo',
     timestamps: false,
 });
+
 console.log("Correo:", Correo === sequelize.models.Correo);
 
 

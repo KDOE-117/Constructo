@@ -1,19 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= titulo%></title>
+    <title>Seguimiento de estudiantes</title>
+    <link rel="stylesheet" href="./css/index.css">
 </head>
 <body>
-    <body>
-        <h1>Lista de Estudiantes</h1>
-        <ul>
-          <% estudiantes.forEach(estudiante => { %>
-            <li>
-                <%= estudiante.codigoEstudiante %> <%= estudiante.nombre %> <%= estudiante.apellido %> - <%= estudiante.fechaNacimiento %></li>
-          <% }) %>
-        </ul>
-      </body>
+    <div class="container">
+        <aside class="sidebar">
+            <h2>Menú</h2>
+            <ul>
+                <li><a href="/inicio">Inicio</a></li>
+                <li><a href="/otra-pagina">Otra Página</a></li>
+                
+            </ul>
+        </aside>
+        <main class="content">
+            <h1>Seguimiento de estudiantes</h1>
+            <div class="filter">
+                <label for="filterInput">Filtrar por:</label>
+                <select id="filterSelect">
+                    <option value="codigoEstudiante">Código</option>
+                    <option value="nombre">Nombre</option>
+                    <option value="apellido">Apellido</option>
+                    <option value="discapacidad">Discapacidad</option>
+                    <option value="telefono">Teléfono</option>
+                    <option value="correo">Correo</option>
+                </select>
+                <input type="text" id="filterInput" onkeyup="filterTable()">
+            </div>
+            <table id="studentsTable">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Código</th>
+                        <th onclick="sortTable(1)">Nombre y Apellido</th>
+                        <th onclick="sortTable(2)">Discapacidad</th>
+                        <th onclick="sortTable(3)">Teléfono</th>
+                        <th onclick="sortTable(4)">Correo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% estudiantes.forEach(estudiante => { %>
+                        <tr>
+                            <td><%= estudiante.codigoEstudiante %></td>
+                            <td><%= estudiante.nombre %> <%= estudiante.apellido %></td>
+                            <td><%= estudiante.Discapacidad ? estudiante.Discapacidad.tipo : 'N/A' %></td>
+                            <td>
+                                <button onclick="updateStudent('<%= estudiante.codigoEstudiante %>')">Actualizar</button>
+                                <button onclick="deleteStudent('<%= estudiante.codigoEstudiante %>')">Eliminar</button>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </main>
+    </div>
+    <script src="./js/index.js"></script>
 </body>
 </html>
