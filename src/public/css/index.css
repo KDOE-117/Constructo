@@ -11,7 +11,7 @@ body {
 
 .sidebar {
     width: 200px;
-    background-color: #2e7d32; /* Verde oscuro */
+    background-color: #29903B; /* Verde oscuro */
     color: white;
     padding: 20px;
     height: 100vh;
@@ -48,7 +48,7 @@ body {
 
 h1 {
     text-align: center;
-    color: #2e7d32; /* Verde oscuro */
+    color: #0B2975; /* Verde oscuro */
 }
 
 .filter {
@@ -68,13 +68,13 @@ th, td {
     border-bottom: 1px solid #ddd;
     cursor: pointer;
 }
-
+/*Tablas*/
 th {
-    background-color: #e8f5e9; /* Verde claro */
+    background-color: #CAD225; /* Verde claro */
 }
 
 tr:hover {
-    background-color: #f1f8e9; /* Verde muy claro */
+    background-color: #E8E520; /* Verde muy claro */
 }
 
 .details-row {
@@ -95,7 +95,7 @@ button {
     padding: 5px 10px;
     margin: 0 5px;
     border: none;
-    background-color: #007bff;
+    background-color: #0B2975;
     color: white;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -110,6 +110,7 @@ button:hover {
     margin-top: 20px;
 }
 
+/*Botones*/
 .pagination button {
     background-color: #2e7d32; /* Verde oscuro */
 }
