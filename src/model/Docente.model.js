@@ -1,7 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from "../config/databaseConnection.js";
 
-
 class Docente extends Model { }
 
 Docente.init({
@@ -24,6 +23,7 @@ Docente.init({
     tableName: 'docente',
     timestamps: false,
 });
+
 console.log("Docente:", Docente === sequelize.models.Docente);
 
 export default Docente;

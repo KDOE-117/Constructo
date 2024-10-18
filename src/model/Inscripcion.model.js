@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from "../config/databaseConnection.js";
-import Estudiante from './Estudiante.js';
-import Asignatura from './Asignatura.js';
+import Estudiante from './Estudiante.model.js';
+import Asignatura from './Asignatura.model.js';
 
 class Inscripcion extends Model { }
 
@@ -44,6 +44,8 @@ Inscripcion.init({
     timestamps: false,
 });
 
+Estudiante.belongsToMany(Asignatura, { through: Inscripcion, foreignKey: 'fk_idEstudiante' });
+Asignatura.belongsToMany(Estudiante, { through: Inscripcion, foreignKey: 'fk_idAsignatura' });
 console.log("Inscripcion:", Inscripcion === sequelize.models.Inscripcion);
 
 

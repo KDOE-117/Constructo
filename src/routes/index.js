@@ -1,12 +1,15 @@
 import { Router } from 'express';
-import { Estudiante, Correo, Telefono, Docente, DiscapacidadEstudiante } from '../model/Asociaciones.js';
+import { Estudiante, Correo, Telefono, Docente, DiscapacidadEstudiante, Inscripcion, Programa } from '../model/Asociaciones.js';
 import Usuario from '../model/Usuario.model.js';
 import Discapacidad from '../model/Discapacidad.model.js';
+import Asignatura from '../model/Asignatura.model.js';
+import Grupo from '../model/Grupo.model.js';
+//import Programa from '../model/Programa.model.js';
 
 const routes = Router()
 
 /*RUTAS PAGINA*/
-//INDEX
+//Login
 routes.get('/login', async (req, res) => {
     res.render('login');
 });
@@ -28,7 +31,6 @@ routes.post('/login', async (req, res) => {
 //Inicio
 routes.get('/inicio', async (req, res) => {
     try {
-        console.log('Iniciando la consulta a la base de datos');
         const estudiantes = await Estudiante.findAll({
             include: [
                 {
@@ -41,7 +43,6 @@ routes.get('/inicio', async (req, res) => {
         });
         res.render('index', { estudiantes });
     } catch (error) {
-        console.error('Error en la consulta:', error);
         res.status(500).render('error', { message: 'Error al cargar la página de inicio' });
     }
 });
@@ -99,8 +100,51 @@ routes.put('/inicio/:id', async (req, res) => {
 });
 
 /*RUTAS API*/
+/*Data Estudiante*/
+
+routes.get('/estudiante', async (req, res) => {
+    try {
+
+        const estudiantes = await Estudiante.findAll({
+            include: [
+                {
+                    model: Discapacidad,
+                    through: { attributes: [] }, // Para evitar datos de la tabla intermedia
+                    // attributes: ['idDiscapacidad', 'tipo'], // Para ver datos de la tabla intermedia...
+                    as: 'Discapacidades'
+                },
+                {
+                    model: Telefono,
+                    attributes: ['numero', 'tipoPersona', 'esEmergencia'],
+                },
+                {
+                    model: Correo,
+                    attributes: ['correo', 'tipoPersona'],
+                },
+                {
+                    model: Inscripcion,
+                    attributes: ['fecha_inscripcion', 'Periodo', 'nota']
+                },
+                {
+                    model: Asignatura,
+                    //attributes: ['nombre', 'creditos', 'codigo']
+                    through: { attributes: [] }
+                },
+                {
+                    model: Grupo,
+                    through: { attributes: [] }
+                },
+            ],
+            attributes: ['codigoEstudiante', 'nombre', 'apellido'],
+        });
+        res.json({ estudiantes });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al obtener los estudiantes' });
+    }
+});
 /*Get All*/
-routes.get('/datosEstudiantesDocentes', async (req, res) => {
+routes.get('/allData', async (req, res) => {
     try {
         const estudiantes = await Estudiante.findAll({
             include: [
@@ -117,6 +161,19 @@ routes.get('/datosEstudiantesDocentes', async (req, res) => {
                     model: Correo,
                     attributes: ['correo', 'tipoPersona'],
                 },
+                {
+                    model: Inscripcion,
+                    attributes: ['fecha_inscripcion', 'Periodo', 'nota']
+                },
+                {
+                    model: Asignatura,
+                    //attributes: ['nombre', 'creditos', 'codigo']
+                    through: { attributes: [] }
+                },
+                {
+                    model: Grupo,
+                    through: { attributes: [] }
+                },
             ],
             attributes: ['codigoEstudiante', 'nombre', 'apellido'],
         });
@@ -129,11 +186,38 @@ routes.get('/datosEstudiantesDocentes', async (req, res) => {
                 {
                     model: Correo,
                     attributes: ['correo', 'tipoPersona'],
+                },
+                {
+                    model: Asignatura,
+                    attributes: ['nombre', 'codigo']
+                },
+                {
+                    model: Grupo,
+                    attributes: ['codigo']
                 }
             ],
             attributes: ['nombre', 'apellido'],
         });
-        res.json({ estudiantes, docentes });
+
+        const asignaturas = await Asignatura.findAll({
+            include: [
+                {
+                    model: Programa,
+                    attributes: ['nombre', 'modalidad', 'jornada', 'codPensum']
+                    //through: { attributes: [] }
+                },
+                {
+                    model: Docente,
+                    attributes: ['nombre', 'apellido']
+                },
+                {
+                    model: Grupo,
+                    through: { attributes: [] }
+                }
+            ],
+            attributes: ['nombre', 'creditos', 'codigo'],
+        });
+        res.json({ asignaturas, estudiantes, docentes, });
 
     } catch (error) {
         console.error(error);
