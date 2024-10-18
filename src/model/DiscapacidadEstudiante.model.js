@@ -31,7 +31,7 @@ DiscapacidadEstudiante.init({
     timestamps: false,
 });
 
-Estudiante.belongsToMany(Discapacidad, { through: DiscapacidadEstudiante, foreignKey: 'fk_idEstudiante' });
+Estudiante.belongsToMany(Discapacidad, { through: DiscapacidadEstudiante, foreignKey: 'fk_idEstudiante', as: 'Discapacidades' });
 Discapacidad.belongsToMany(Estudiante, { through: DiscapacidadEstudiante, foreignKey: 'fk_idDiscapacidad' });
 
 

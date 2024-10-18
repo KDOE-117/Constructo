@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from "../config/databaseConnection.js";
-import Estudiante from './Estudiante.js';
-import Grupo from './Grupo.js';
+import Estudiante from './Estudiante.model.js';
+import Grupo from './Grupo.model.js';
 
 
 class EstudianteGrupo extends Model { }
@@ -32,5 +32,7 @@ EstudianteGrupo.init({
     tableName: 'estudiante_grupo',
     timestamps: false,
 });
+
+console.log("EstudianteGrupo:", EstudianteGrupo === sequelize.models.EstudianteGrupo);
 
 export default EstudianteGrupo;

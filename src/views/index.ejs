@@ -13,7 +13,6 @@
             <ul>
                 <li><a href="/inicio">Inicio</a></li>
                 <li><a href="/otra-pagina">Otra Página</a></li>
-                
             </ul>
         </aside>
         <main class="content">
@@ -28,7 +27,8 @@
                     <option value="telefono">Teléfono</option>
                     <option value="correo">Correo</option>
                 </select>
-                <input type="text" id="filterInput" onkeyup="filterTable()">
+                <input type="text" id="filterInput">
+                <button onclick="filterTable()">Buscar</button>
             </div>
             <table id="studentsTable">
                 <thead>
@@ -38,23 +38,17 @@
                         <th onclick="sortTable(2)">Discapacidad</th>
                         <th onclick="sortTable(3)">Teléfono</th>
                         <th onclick="sortTable(4)">Correo</th>
-                        <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <% estudiantes.forEach(estudiante => { %>
-                        <tr>
-                            <td><%= estudiante.codigoEstudiante %></td>
-                            <td><%= estudiante.nombre %> <%= estudiante.apellido %></td>
-                            <td><%= estudiante.Discapacidad ? estudiante.Discapacidad.tipo : 'N/A' %></td>
-                            <td>
-                                <button onclick="updateStudent('<%= estudiante.codigoEstudiante %>')">Actualizar</button>
-                                <button onclick="deleteStudent('<%= estudiante.codigoEstudiante %>')">Eliminar</button>
-                            </td>
-                        </tr>
-                    <% }) %>
+                <tbody id="studentsTableBody">
+                    <!-- Aquí se insertarán las filas de estudiantes -->
                 </tbody>
             </table>
+            <div class="pagination">
+                <button onclick="prevPage()">Anterior</button>
+                <span id="pageInfo"></span>
+                <button onclick="nextPage()">Siguiente</button>
+            </div>
         </main>
     </div>
     <script src="./js/index.js"></script>

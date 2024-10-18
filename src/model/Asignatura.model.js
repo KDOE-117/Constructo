@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from "../config/databaseConnection.js";
-import Docente from './Docente.js';
-import Programa from './Programa.js';
+import Docente from './Docente.model.js';
+import Programa from './Programa.model.js';
 
 class Asignatura extends Model { }
 
