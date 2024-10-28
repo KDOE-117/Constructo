@@ -10,6 +10,8 @@ import Programa from './Programa.model.js';
 import Grupo from './Grupo.model.js';
 import EstudianteGrupo from './EstudianteGrupo.model.js';
 import GrupoAsignatura from './GrupoAsignatura.model.js';
+import Seguimiento from './Seguimiento.model.js';
+import Usuario from './Usuario.model.js';
 
 
 Estudiante.hasMany(Correo, { foreignKey: 'fk_idEstudiante' });
@@ -33,11 +35,14 @@ Grupo.belongsTo(Docente, { foreignKey: 'fk_idDocente' });
 Estudiante.hasMany(DiscapacidadEstudiante, { foreignKey: 'fk_idEstudiante' });
 Discapacidad.hasMany(DiscapacidadEstudiante, { foreignKey: 'fk_idDiscapacidad' });
 
-DiscapacidadEstudiante.belongsTo(Estudiante, { foreignKey: 'fk_idEstudiante'});
-DiscapacidadEstudiante.belongsTo(Discapacidad, { foreignKey: 'fk_idDiscapacidad'});
+DiscapacidadEstudiante.belongsTo(Estudiante, { foreignKey: 'fk_idEstudiante' });
+DiscapacidadEstudiante.belongsTo(Discapacidad, { foreignKey: 'fk_idDiscapacidad' });
 
 Estudiante.hasMany(Inscripcion, { foreignKey: 'fk_idEstudiante' });
 Inscripcion.belongsTo(Estudiante, { foreignKey: 'fk_idEstudiante' });
+
+
+
 
 Estudiante.hasMany(EstudianteGrupo, { foreignKey: 'fk_idEstudiante' });
 EstudianteGrupo.belongsTo(Estudiante, { foreignKey: 'fk_idEstudiante' });
@@ -48,6 +53,16 @@ Grupo.belongsToMany(Estudiante, { through: EstudianteGrupo, foreignKey: 'fk_idGr
 Grupo.hasMany(EstudianteGrupo, { foreignKey: 'fk_idGrupo' });
 EstudianteGrupo.belongsTo(Grupo, { foreignKey: 'fk_idGrupo' });
 
+Estudiante.hasMany(Seguimiento, { foreignKey: 'fk_idEstudiante' });
+Seguimiento.belongsTo(Estudiante, { foreignKey: 'fk_idEstudiante' });
+
+Estudiante.belongsToMany(Usuario, { through: Seguimiento, foreignKey: 'fk_idEstudiante' });
+Usuario.belongsToMany(Estudiante, { through: Seguimiento, foreignKey: 'fk_idUsuario' });
+
+Usuario.hasMany(Seguimiento, { foreignKey: 'fk_idUsuario' });
+Seguimiento.belongsTo(Usuario, { foreignKey: 'fk_idUsuario' });
+
+
 Asignatura.hasMany(Inscripcion, { foreignKey: 'fk_idAsignatura' });
 Inscripcion.belongsTo(Asignatura, { foreignKey: 'fk_idAsignatura' });
 
@@ -57,4 +72,4 @@ Asignatura.belongsToMany(Grupo, { through: GrupoAsignatura, foreignKey: 'fk_idAs
 Programa.hasMany(Asignatura, { foreignKey: 'fk_idPrograma' });
 Asignatura.belongsTo(Programa, { foreignKey: 'fk_idPrograma' });
 
-export { Estudiante, Discapacidad, DiscapacidadEstudiante, Correo, Telefono, Docente, Asignatura, Inscripcion, Programa, GrupoAsignatura };
+export { Estudiante, Discapacidad, DiscapacidadEstudiante, Correo, Telefono, Docente, Asignatura, Inscripcion, Programa, GrupoAsignatura, EstudianteGrupo };

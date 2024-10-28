@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seguimiento de estudiantes</title>
+    <title>Inicio</title>
     <link rel="stylesheet" href="./css/index.css">
 </head>
 <body>
@@ -15,6 +15,12 @@
                 <li><a href="/login">Salir</a></li>
             </ul>
         </aside>
+
+        <div id="modal" style="display:none;">
+            <div id="modalContent"></div>
+            <button onclick="document.getElementById('modal').style.display='none'">Cerrar</button>
+        </div>       
+         
         <main class="content">
             <h1>Seguimiento de estudiantes</h1>
             <div class="filter">
@@ -37,11 +43,11 @@
                         <th onclick="sortTable(1)">Nombre y Apellido</th>
                         <th onclick="sortTable(2)">Discapacidad</th>
                         <th onclick="sortTable(3)">Teléfono</th>
-                        <th onclick="sortTable(4)">Correo</th>
+                        <th onclick="sortTable(4)">Fecha Nacimiento</th>
                     </tr>
                 </thead>
                 <tbody id="studentsTableBody">
-                    <!-- Aquí se insertarán las filas de estudiantes -->
+                    <!-- Aquí se insertan las filas de estudiantes -->
                 </tbody>
             </table>
             <div class="pagination">
