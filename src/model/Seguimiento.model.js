@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from "../config/databaseConnection.js";
-import Estudiante from './Estudiante.js';
-import Usuario from './Usuario.js';
+import Estudiante from './Estudiante.model.js';
+import Usuario from './Usuario.model.js';
 
 class Seguimiento extends Model { }
 
@@ -33,6 +33,5 @@ Seguimiento.init({
 });
 
 console.log("Seguimiento:", Seguimiento === sequelize.models.Seguimiento);
-
 
 export default Seguimiento;

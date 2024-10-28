@@ -35,7 +35,7 @@ function renderTable(data = students) {
                 <td>${estudiante.nombre} ${estudiante.apellido}</td>
                 <td>${estudiante.Discapacidades ? estudiante.Discapacidades.map(d => d.tipo).join(', ') : 'N/A'}</td>
                 <td>${estudiante.Telefonos ? estudiante.Telefonos.map(t => t.numero).join(', ') : 'N/A'}</td>
-                <td>${estudiante.Correos ? estudiante.Correos.map(c => c.correo).join(', ') : 'N/A'}</td>
+                <td>${estudiante.fechaNacimiento ? new Date(estudiante.fechaNacimiento).toLocaleDateString('es-ES', { timeZone: 'UTC' }) : 'N/A'}</td>
             `;
             row.onclick = () => toggleDetails(estudiante.codigoEstudiante);
             tableBody.appendChild(row);
@@ -70,8 +70,9 @@ function toggleDetails(codigo) {
             <div class="detail-item"><strong>Código:</strong> ${codigo}</div>
             <div class="detail-item"><strong>Nombre:</strong> ${estudiante.nombre}</div>
             <div class="detail-item"><strong>Apellido:</strong> ${estudiante.apellido}</div>
+            <div class="detail-item"><strong>Fecha de Nacimiento:</strong> ${estudiante.fechaNacimiento ? new Date(estudiante.fechaNacimiento).toLocaleDateString('es-ES', { timeZone: 'UTC' }) : 'N/A'}</div>
             <div class="detail-item"><strong>Discapacidad:</strong> ${estudiante.Discapacidades ? `<ul>${estudiante.Discapacidades.map(d => `<li>${d.tipo}</li>`).join('')}</ul>` : 'N/A'}</div>
-            <div class="detail-item"><strong>Teléfonos:</strong> ${estudiante.Telefonos ? `<ul>${estudiante.Telefonos.map(t => `<li>${t.numero}</li>`).join('')}</ul>` : 'N/A'}</div>
+            <div class="detail-item"><strong>Teléfonos:</strong> ${estudiante.Telefonos ? `<ul>${estudiante.Telefonos.map(t => `<li>${t.numero} ${t.esEmergencia ? '(Emergencia)' : ''}</li>`).join('')}</ul>` : 'N/A'}</div>
             <div class="detail-item"><strong>Correos:</strong> ${estudiante.Correos ? `<ul>${estudiante.Correos.map(c => `<li>${c.correo}</li>`).join('')}</ul>` : 'N/A'}</div>
             <div class="detail-item"><strong>Inscripción:</strong> ${estudiante.Inscripcions ? `<ul>${estudiante.Inscripcions.map(i => `<li>Periodo: ${i.Periodo}, Nota: ${i.nota}</li>`).join('')}</ul>` : 'N/A'}</div>
             <div class="detail-item"><strong>Asignaturas:</strong> ${estudiante.Asignaturas ? `<ul>${estudiante.Asignaturas.map(a => `<li>${a.nombre}</li>`).join('')}</ul>` : 'N/A'}</div>
@@ -89,13 +90,147 @@ function toggleDetails(codigo) {
 }
 
 function updateStudent(codigo) {
-    alert('Actualizar estudiante con código: ' + codigo);
-    // Aquí puedes agregar la lógica para actualizar el estudiante
+    const student = students.find(est => est.codigoEstudiante === codigo);
+    if (student) {
+        const formHtml = `
+            <form id="updateForm">
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" value="${student.nombre}">
+                
+                <label for="apellido">Apellido:</label>
+                <input type="text" id="apellido" name="apellido" value="${student.apellido}">
+                
+                <label for="fechaNacimiento">Fecha de Nacimiento:</label>
+                <input type="date" id="fechaNacimiento" name="fechaNacimiento" value="${student.fechaNacimiento ? new Date(student.fechaNacimiento).toISOString().split('T')[0] : ''}">
+                
+                <label for="correos">Correos:</label>
+                <input type="text" id="correo1" name="correo1" value="${student.Correos[0]?.correo || ''}">
+                <input type="text" id="correo2" name="correo2" value="${student.Correos[1]?.correo || ''}">
+                
+                <label for="telefonos">Teléfonos:</label>
+                <div>
+                    <input type="text" id="telefono1" name="telefono1" value="${student.Telefonos[0]?.numero || ''}">
+                    <label>
+                        <input type="checkbox" id="telefono1Emergencia" name="telefono1Emergencia" ${student.Telefonos[0]?.esEmergencia ? 'checked' : ''}>
+                        Emergencia
+                    </label>
+                </div>
+                <div>
+                    <input type="text" id="telefono2" name="telefono2" value="${student.Telefonos[1]?.numero || ''}">
+                    <label>
+                        <input type="checkbox" id="telefono2Emergencia" name="telefono2Emergencia" ${student.Telefonos[1]?.esEmergencia ? 'checked' : ''}>
+                        Emergencia
+                    </label>
+                </div>
+                
+                <label for="discapacidades">Discapacidades:</label>
+                <select id="discapacidades" name="discapacidades" multiple>
+                    <option value="Visual">Visual</option>
+                    <option value="Auditiva">Auditiva</option>
+                    <option value="Motora">Motora</option>
+                    <option value="Intelectual">Intelectual</option>
+                    <option value="Psicosocial">Psicosocial</option>
+                    <option value="Lenguaje">Lenguaje</option>
+                    <option value="Visceral">Visceral</option>
+                    <option value="Múltiple">Múltiple</option>
+                    <option value="Cognitiva">Cognitiva</option>
+                    <option value="Desarrollo">Desarrollo</option>
+                    <option value="Neurológica">Neurológica</option>
+                    <option value="Sensorial">Sensorial</option>
+                    <option value="Crónica">Crónica</option>
+                    <option value="Transitoria">Transitoria</option>
+                    <option value="Respiratoria">Respiratoria</option>
+                    <option value="Cardíaca">Cardíaca</option>
+                    <option value="Renal">Renal</option>
+                    <option value="Hepática">Hepática</option>
+                    <option value="Inmunológica">Inmunológica</option>
+                    <option value="Dermatológica">Dermatológica</option>
+                </select>
+                
+                <button type="button" onclick="submitUpdate('${codigo}')">Actualizar</button>
+            </form>
+        `;
+        document.getElementById('modalContent').innerHTML = formHtml;
+        document.getElementById('modal').style.display = 'block';
+
+        // Preseleccionar las discapacidades del estudiante
+        const select = document.getElementById('discapacidades');
+        student.Discapacidades.forEach(d => {
+            for (let option of select.options) {
+                if (option.value === d.tipo) {
+                    option.selected = true;
+                }
+            }
+        });
+    } else {
+        alert('Estudiante no encontrado');
+    }
 }
 
-function deleteStudent(codigo) {
-    alert('Eliminar estudiante con código: ' + codigo);
-    // Aquí puedes agregar la lógica para eliminar el estudiante
+async function submitUpdate(codigo) {
+    const form = document.getElementById('updateForm');
+    const updatedStudent = {
+        nombre: form.nombre.value,
+        apellido: form.apellido.value,
+        fechaNacimiento: form.fechaNacimiento.value,
+        Correos: [
+            { correo: form.correo1.value },
+            { correo: form.correo2.value }
+        ].filter(c => c.correo), // Filtrar correos vacíos
+        Telefonos: [
+            { numero: form.telefono1.value, esEmergencia: form.telefono1Emergencia.checked },
+            { numero: form.telefono2.value, esEmergencia: form.telefono2Emergencia.checked }
+        ].filter(t => t.numero), // Filtrar teléfonos vacíos
+        Discapacidades: Array.from(form.discapacidades.selectedOptions).map(option => ({ tipo: option.value }))
+    };
+    try {
+        const response = await fetch(`/actualizarEstudiante/${codigo}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedStudent)
+        });
+
+        if (response.ok) {
+            const index = students.findIndex(est => est.codigoEstudiante === codigo);
+            if (index !== -1) {
+                students[index] = { ...students[index], ...updatedStudent };
+                filteredStudents = students; // Actualiza la lista filtrada
+                renderTable();
+                document.getElementById('modal').style.display = 'none';
+                alert('Estudiante actualizado correctamente');
+            }
+        } else {
+            alert('Error al actualizar el estudiante en la base de datos');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al actualizar el estudiante');
+    }
+}
+
+async function deleteStudent(codigo) {
+    const confirmDelete = confirm('¿Estás seguro de que deseas eliminar al estudiante con código: ' + codigo + '?');
+    if (confirmDelete) {
+        try {
+            const response = await fetch(`/borrarEstudiante/${codigo}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                students = students.filter(est => est.codigoEstudiante !== codigo);
+                filteredStudents = students; // Actualiza la lista filtrada
+                renderTable();
+                alert('Estudiante eliminado');
+            } else {
+                alert('Error al eliminar el estudiante en la base de datos');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al eliminar el estudiante');
+        }
+    }
 }
 
 function filterTable() {
