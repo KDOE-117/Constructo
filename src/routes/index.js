@@ -46,7 +46,7 @@ routes.get('/inicio', async (req, res) => {
         res.status(500).render('error', { message: 'Error al cargar la página de inicio' });
     }
 });
-
+/* 
 routes.post('/inicio', async (req, res) => {
     const { codigoEstudiante, nombre, apellido, fechaNacimiento, idDiscapacidad } = req.body;
     try {
@@ -97,7 +97,7 @@ routes.put('/inicio/:id', async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-});
+}); */
 
 /*RUTAS API*/
 /*Data Estudiante*/
