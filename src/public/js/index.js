@@ -1,8 +1,8 @@
 let currentPage = 1;
 const studentsPerPage = 5;
-let students = []; // Aquí se almacenarán los datos de los estudiantes
+let students = [];
+let filteredStudents = students;
 
-// Función para obtener los datos de la API
 async function fetchStudents() {
     try {
         const response = await fetch('/estudiante');
@@ -14,45 +14,48 @@ async function fetchStudents() {
     }
 }
 
-// Función para normalizar cadenas de texto eliminando tildes
 function normalizeString(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-function renderTable(filteredStudents = students) {
+function renderTable(data = students) {
     const tableBody = document.getElementById('studentsTableBody');
     tableBody.innerHTML = '';
     const start = (currentPage - 1) * studentsPerPage;
     const end = start + studentsPerPage;
-    const paginatedStudents = filteredStudents.slice(start, end);
+    const paginatedStudents = data.slice(start, end);
 
-    paginatedStudents.forEach(estudiante => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td>${estudiante.codigoEstudiante}</td>
-            <td>${estudiante.nombre} ${estudiante.apellido}</td>
-            <td>${estudiante.Discapacidades ? estudiante.Discapacidades.map(d => d.tipo).join(', ') : 'N/A'}</td>
-            <td>${estudiante.Telefonos ? estudiante.Telefonos.map(t => t.numero).join(', ') : 'N/A'}</td>
-            <td>${estudiante.Correos ? estudiante.Correos.map(c => c.correo).join(', ') : 'N/A'}</td>
-        `;
-        row.onclick = () => toggleDetails(estudiante.codigoEstudiante);
-        tableBody.appendChild(row);
+    if (paginatedStudents.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="5">No hay estudiantes para mostrar</td></tr>';
+    } else {
+        paginatedStudents.forEach(estudiante => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${estudiante.codigoEstudiante}</td>
+                <td>${estudiante.nombre} ${estudiante.apellido}</td>
+                <td>${estudiante.Discapacidades ? estudiante.Discapacidades.map(d => d.tipo).join(', ') : 'N/A'}</td>
+                <td>${estudiante.Telefonos ? estudiante.Telefonos.map(t => t.numero).join(', ') : 'N/A'}</td>
+                <td>${estudiante.Correos ? estudiante.Correos.map(c => c.correo).join(', ') : 'N/A'}</td>
+            `;
+            row.onclick = () => toggleDetails(estudiante.codigoEstudiante);
+            tableBody.appendChild(row);
 
-        const detailsRow = document.createElement('tr');
-        detailsRow.classList.add('details-row');
-        detailsRow.id = `details-${estudiante.codigoEstudiante}`;
-        detailsRow.style.display = 'none';
-        detailsRow.innerHTML = `
-            <td colspan="5">
-                <div class="details-card" id="details-card-${estudiante.codigoEstudiante}">
-                    <!-- Aquí se insertarán los detalles del estudiante -->
-                </div>
-            </td>
-        `;
-        tableBody.appendChild(detailsRow);
-    });
+            const detailsRow = document.createElement('tr');
+            detailsRow.classList.add('details-row');
+            detailsRow.id = `details-${estudiante.codigoEstudiante}`;
+            detailsRow.style.display = 'none';
+            detailsRow.innerHTML = `
+                <td colspan="5">
+                    <div class="details-card" id="details-card-${estudiante.codigoEstudiante}">
+                        
+                    </div>
+                </td>
+            `;
+            tableBody.appendChild(detailsRow);
+        });
+    }
 
-    document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${Math.ceil(filteredStudents.length / studentsPerPage)}`;
+    document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${Math.ceil(data.length / studentsPerPage)}`;
 }
 
 function toggleDetails(codigo) {
@@ -64,15 +67,15 @@ function toggleDetails(codigo) {
         detailsRow.style.display = 'table-row';
         const estudiante = students.find(est => est.codigoEstudiante === codigo);
         detailsCard.innerHTML = `
-            <p><strong>Código:</strong> ${codigo}</p>
-            <p><strong>Nombre:</strong> ${estudiante.nombre}</p>
-            <p><strong>Apellido:</strong> ${estudiante.apellido}</p>
-            <p><strong>Discapacidad:</strong> ${estudiante.Discapacidades ? estudiante.Discapacidades.map(d => d.tipo).join(', ') : 'N/A'}</p>
-            <p><strong>Teléfonos:</strong> ${estudiante.Telefonos ? estudiante.Telefonos.map(t => t.numero).join(', ') : 'N/A'}</p>
-            <p><strong>Correos:</strong> ${estudiante.Correos ? estudiante.Correos.map(c => c.correo).join(', ') : 'N/A'}</p>
-            <p><strong>Inscripciones:</strong> ${estudiante.Inscripcions ? estudiante.Inscripcions.map(i => `Periodo: ${i.Periodo}, Nota: ${i.nota}`).join('<br>') : 'N/A'}</p>
-            <p><strong>Asignaturas:</strong> ${estudiante.Asignaturas ? estudiante.Asignaturas.map(a => a.nombre).join(', ') : 'N/A'}</p>
-            <p><strong>Grupos:</strong> ${estudiante.Grupos ? estudiante.Grupos.map(g => g.codigo).join(', ') : 'N/A'}</p>
+            <div class="detail-item"><strong>Código:</strong> ${codigo}</div>
+            <div class="detail-item"><strong>Nombre:</strong> ${estudiante.nombre}</div>
+            <div class="detail-item"><strong>Apellido:</strong> ${estudiante.apellido}</div>
+            <div class="detail-item"><strong>Discapacidad:</strong> ${estudiante.Discapacidades ? `<ul>${estudiante.Discapacidades.map(d => `<li>${d.tipo}</li>`).join('')}</ul>` : 'N/A'}</div>
+            <div class="detail-item"><strong>Teléfonos:</strong> ${estudiante.Telefonos ? `<ul>${estudiante.Telefonos.map(t => `<li>${t.numero}</li>`).join('')}</ul>` : 'N/A'}</div>
+            <div class="detail-item"><strong>Correos:</strong> ${estudiante.Correos ? `<ul>${estudiante.Correos.map(c => `<li>${c.correo}</li>`).join('')}</ul>` : 'N/A'}</div>
+            <div class="detail-item"><strong>Inscripción:</strong> ${estudiante.Inscripcions ? `<ul>${estudiante.Inscripcions.map(i => `<li>Periodo: ${i.Periodo}, Nota: ${i.nota}</li>`).join('')}</ul>` : 'N/A'}</div>
+            <div class="detail-item"><strong>Asignaturas:</strong> ${estudiante.Asignaturas ? `<ul>${estudiante.Asignaturas.map(a => `<li>${a.nombre}</li>`).join('')}</ul>` : 'N/A'}</div>
+            <div class="detail-item"><strong>Grupos:</strong> ${estudiante.Grupos ? `<ul>${estudiante.Grupos.map(g => `<li>${g.codigo}</li>`).join('')}</ul>` : 'N/A'}</div>
             <div class="actions">
                 <button onclick="updateStudent('${codigo}')">Actualizar</button>
                 <button onclick="deleteStudent('${codigo}')">Eliminar</button>
@@ -98,7 +101,7 @@ function deleteStudent(codigo) {
 function filterTable() {
     const filterSelect = document.getElementById('filterSelect').value;
     const filterInput = normalizeString(document.getElementById('filterInput').value);
-    const filteredStudents = students.filter(estudiante => {
+    filteredStudents = students.filter(estudiante => {
         let txtValue = '';
         switch (filterSelect) {
             case 'codigoEstudiante':
@@ -135,10 +138,10 @@ function sortTable(n) {
     while (switching) {
         switching = false;
         rows = table.rows;
-        for (i = 1; i < (rows.length - 2); i += 2) { // Ajuste para incluir filas de detalles
+        for (i = 1; i < (rows.length - 2); i += 2) {
             shouldSwitch = false;
             x = rows[i].getElementsByTagName('TD')[n];
-            y = rows[i + 2].getElementsByTagName('TD')[n]; // Ajuste para incluir filas de detalles
+            y = rows[i + 2].getElementsByTagName('TD')[n];
             if (dir === 'asc') {
                 if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
                     shouldSwitch = true;
@@ -152,8 +155,8 @@ function sortTable(n) {
             }
         }
         if (shouldSwitch) {
-            rows[i].parentNode.insertBefore(rows[i + 2], rows[i]); // Ajuste para incluir filas de detalles
-            rows[i].parentNode.insertBefore(rows[i + 3], rows[i + 1]); // Ajuste para incluir filas de detalles
+            rows[i].parentNode.insertBefore(rows[i + 2], rows[i]);
+            rows[i].parentNode.insertBefore(rows[i + 3], rows[i + 1]);
             switching = true;
             switchcount++;
         } else {
@@ -168,14 +171,14 @@ function sortTable(n) {
 function prevPage() {
     if (currentPage > 1) {
         currentPage--;
-        renderTable();
+        renderTable(filteredStudents.length ? filteredStudents : students);
     }
 }
 
 function nextPage() {
-    if (currentPage < Math.ceil(students.length / studentsPerPage)) {
+    if (currentPage < Math.ceil((filteredStudents.length ? filteredStudents : students).length / studentsPerPage)) {
         currentPage++;
-        renderTable();
+        renderTable(filteredStudents.length ? filteredStudents : students);
     }
 }
 
