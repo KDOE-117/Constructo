@@ -148,6 +148,7 @@ function updateStudent(codigo) {
                 </select>
                 
                 <button type="button" onclick="submitUpdate('${codigo}')">Actualizar</button>
+                <button type="button" onclick="closeModal()">Cerrar</button>
             </form>
         `;
         document.getElementById('modalContent').innerHTML = formHtml;
@@ -165,6 +166,10 @@ function updateStudent(codigo) {
     } else {
         alert('Estudiante no encontrado');
     }
+}
+
+function closeModal() {
+    document.getElementById('modal').style.display = 'none';
 }
 
 async function submitUpdate(codigo) {
@@ -253,9 +258,6 @@ function filterTable() {
                 break;
             case 'telefono':
                 txtValue = estudiante.Telefonos ? estudiante.Telefonos.map(t => t.numero).join(', ') : '';
-                break;
-            case 'correo':
-                txtValue = estudiante.Correos ? estudiante.Correos.map(c => c.correo).join(', ') : '';
                 break;
         }
         return normalizeString(txtValue).includes(filterInput);
