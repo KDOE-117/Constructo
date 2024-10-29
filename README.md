@@ -13,4 +13,4 @@ Credenciales de Usuario:
 **Contraseña**: admin_pass
 
 Para correr el aplicativo de forma local debes ejecutar la siguiente sentencia en tu terminal de VS Code.
-npm run try
+**npm run try**
