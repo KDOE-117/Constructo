@@ -5,12 +5,12 @@ Para empezar. Necesitarás correr el script del archivo Constructo.sql y mantene
 Credenciales de Usuario:
 
 <-Docente->
-docente_user
-docente_pass
+**Usuario**: docente_user
+**Contraseña**: docente_pass
 
 <-administrativo->
-admin_user
-admin_pass
+**Usuario**: admin_user
+**Contraseña**: admin_pass
 
 Para correr el aplicativo de forma local debes ejecutar la siguiente sentencia en tu terminal de VS Code.
 npm run try
